@@ -25,7 +25,10 @@ jobs:
           flavor: latest=true
           images: ${{ github.repository }}
           tags: |
+            # tag event
             type=ref,event=tag
+            # set latest tag for default branch
+            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Log in to ghcr.io
         uses: docker/login-action@v2
