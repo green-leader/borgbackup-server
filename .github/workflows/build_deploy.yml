@@ -1,13 +1,14 @@
 ---
-name: 'Build Latest Images'
+name: 'Build and Deploy'
 
 on:
   push:
     branches:
       - main
+    tags:
+      - 'v*'
       
 env:
-  TAG: ghcr.io/${{ github.repository }}:latest
   PLATFORMS: linux/amd64,linux/arm64
 
 jobs:
@@ -16,6 +17,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          flavor: latest=auto
+          images: ${{ github.repository }}
+          tags: |
+            type=ref,event=tag
 
       - name: Log in to ghcr.io
         uses: docker/login-action@v2
@@ -39,5 +49,5 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           platforms: ${{ env.PLATFORMS }}
-          push: true
-          tags: ${{ env.TAG }}
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
