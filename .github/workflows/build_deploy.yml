@@ -23,7 +23,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           flavor: latest=true
-          images: ${{ github.repository }}
+          images: ghcr.io/${{ github.repository }}
           tags: |
             # tag event
             type=ref,event=tag
