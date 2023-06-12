@@ -22,7 +22,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          flavor: latest=auto
+          flavor: latest=true
           images: ${{ github.repository }}
           tags: |
             type=ref,event=tag
