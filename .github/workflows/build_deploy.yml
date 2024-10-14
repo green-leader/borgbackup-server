@@ -12,8 +12,20 @@ env:
   PLATFORMS: linux/amd64,linux/arm64
 
 jobs:
-  docker:
+  test:
     runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Test build
+      run: docker build . --file Dockerfile --tag $IMAGE_NAME
+
+  deploy:
+    runs-on: ubuntu-latest
+    #ensure test passes before pushing
+    needs: test
+    if: github.event_name == 'push'
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -23,12 +35,16 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           flavor: latest=true
-          images: ghcr.io/${{ github.repository }}
+          images: |
+            ${{ github.repository }}
+            ghcr.io/${{ github.repository }}
           tags: |
             # tag event
             type=ref,event=tag
             # set latest tag for default branch
             type=raw,value=latest,enable={{is_default_branch}}
+            # set date as tag using ISO8601
+            type=raw,value={{date YYYY-MM-DD}}
 
       - name: Log in to ghcr.io
         uses: docker/login-action@v2
