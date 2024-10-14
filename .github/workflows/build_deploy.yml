@@ -18,7 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Test build
-      run: docker build . --file Dockerfile --tag $IMAGE_NAME
+      run: docker build . --file Dockerfile --tag ${{ github.repository }}
 
   deploy:
     runs-on: ubuntu-latest
